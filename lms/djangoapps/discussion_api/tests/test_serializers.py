@@ -261,7 +261,7 @@ class ThreadSerializerSerializationTest(SerializerTestMixin, SharedModuleStoreTe
         del thread_data["resp_total"]
         self.register_get_thread_response(thread_data)
         serialized = self.serialize(Thread(id=thread_data["id"]))
-        self.assertEqual("response_count" in serialized, False)
+        self.assertNotIn("response_count", serialized)
 
 
 @ddt.ddt

@@ -198,6 +198,7 @@ class ThreadSerializer(_ContentSerializer):
     read = serializers.BooleanField(read_only=True)
     has_endorsed = serializers.BooleanField(read_only=True, source="endorsed")
     response_count = serializers.IntegerField(source="resp_total", read_only=True, required=False)
+    #response_count = serializers.SerializerMethodField(read_only=True, required=False)
 
     non_updatable_fields = NON_UPDATABLE_THREAD_FIELDS
 
@@ -251,6 +252,13 @@ class ThreadSerializer(_ContentSerializer):
     def get_non_endorsed_comment_list_url(self, obj):
         """Returns the URL to retrieve the thread's non-endorsed comments."""
         return self.get_comment_list_url(obj, endorsed=False)
+
+    # def get_response_count(self, obj):
+    #     if obj["thread_type"] == "question":
+    #         return len(obj["endorsed_responses"]) + obj["non_endorsed_resp_total"]
+    #     elif not isinstance(obj, dict):
+    #         return obj["resp_total"]
+    #     return None
 
     def create(self, validated_data):
         thread = Thread(user_id=self.context["cc_requester"]["id"], **validated_data)

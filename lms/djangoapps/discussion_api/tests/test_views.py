@@ -400,12 +400,16 @@ class ThreadViewSetCreateTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
 
     def test_basic(self):
         self.register_get_user_response(self.user)
-        self.register_post_thread_response({
-            "id": "test_thread",
-            "username": self.user.username,
-            "created_at": "2015-05-19T00:00:00Z",
-            "updated_at": "2015-05-19T00:00:00Z",
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": "test_thread",
+                "username": self.user.username,
+                "created_at": "2015-05-19T00:00:00Z",
+                "updated_at": "2015-05-19T00:00:00Z",
+            },
+            is_new_thread=True
+        )
+        self.register_post_thread_response(cs_thread)
         request_data = {
             "course_id": unicode(self.course.id),
             "topic_id": "test_topic",
@@ -493,18 +497,21 @@ class ThreadViewSetPartialUpdateTest(DiscussionAPIViewTestMixin, ModuleStoreTest
 
     def test_basic(self):
         self.register_get_user_response(self.user)
-        cs_thread = make_minimal_cs_thread({
-            "id": "test_thread",
-            "course_id": unicode(self.course.id),
-            "commentable_id": "original_topic",
-            "username": self.user.username,
-            "user_id": str(self.user.id),
-            "created_at": "2015-05-29T00:00:00Z",
-            "updated_at": "2015-05-29T00:00:00Z",
-            "thread_type": "discussion",
-            "title": "Original Title",
-            "body": "Original body",
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": "test_thread",
+                "course_id": unicode(self.course.id),
+                "commentable_id": "original_topic",
+                "username": self.user.username,
+                "user_id": str(self.user.id),
+                "created_at": "2015-05-29T00:00:00Z",
+                "updated_at": "2015-05-29T00:00:00Z",
+                "thread_type": "discussion",
+                "title": "Original Title",
+                "body": "Original body",
+            },
+            is_new_thread=False
+        )
         self.register_get_thread_response(cs_thread)
         self.register_put_thread_response(cs_thread)
         request_data = {"raw_body": "Edited body"}
@@ -564,11 +571,14 @@ class ThreadViewSetPartialUpdateTest(DiscussionAPIViewTestMixin, ModuleStoreTest
 
     def test_error(self):
         self.register_get_user_response(self.user)
-        cs_thread = make_minimal_cs_thread({
-            "id": "test_thread",
-            "course_id": unicode(self.course.id),
-            "user_id": str(self.user.id),
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": "test_thread",
+                "course_id": unicode(self.course.id),
+                "user_id": str(self.user.id),
+            },
+            is_new_thread=False
+        )
         self.register_get_thread_response(cs_thread)
         request_data = {"title": ""}
         response = self.client.patch(  # pylint: disable=no-member
@@ -596,12 +606,15 @@ class ThreadViewSetDeleteTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
 
     def test_basic(self):
         self.register_get_user_response(self.user)
-        cs_thread = make_minimal_cs_thread({
-            "id": self.thread_id,
-            "course_id": unicode(self.course.id),
-            "username": self.user.username,
-            "user_id": str(self.user.id),
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": self.thread_id,
+                "course_id": unicode(self.course.id),
+                "username": self.user.username,
+                "user_id": str(self.user.id),
+            },
+            is_new_thread=False
+        )
         self.register_get_thread_response(cs_thread)
         self.register_delete_thread_response(self.thread_id)
         response = self.client.delete(self.url)
@@ -722,13 +735,16 @@ class CommentViewSetListTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
         end is requested
         """
         self.register_get_user_response(self.user)
-        self.register_get_thread_response(make_minimal_cs_thread({
-            "id": self.thread_id,
-            "course_id": unicode(self.course.id),
-            "thread_type": "discussion",
-            "children": [],
-            "resp_total": 10,
-        }))
+        self.register_get_thread_response(make_minimal_cs_thread(
+            {
+                "id": self.thread_id,
+                "course_id": unicode(self.course.id),
+                "thread_type": "discussion",
+                "children": [],
+                "resp_total": 10,
+            },
+            is_new_thread=False
+        ))
         response = self.client.get(
             self.url,
             {"thread_id": self.thread_id, "page": "18", "page_size": "4"}
@@ -975,17 +991,20 @@ class ThreadViewSetRetrieveTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase)
 
     def test_basic(self):
         self.register_get_user_response(self.user)
-        cs_thread = make_minimal_cs_thread({
-            "id": self.thread_id,
-            "course_id": unicode(self.course.id),
-            "commentable_id": "test_topic",
-            "username": self.user.username,
-            "user_id": str(self.user.id),
-            "title": "Test Title",
-            "body": "Test body",
-            "created_at": "2015-05-29T00:00:00Z",
-            "updated_at": "2015-05-29T00:00:00Z"
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": self.thread_id,
+                "course_id": unicode(self.course.id),
+                "commentable_id": "test_topic",
+                "username": self.user.username,
+                "user_id": str(self.user.id),
+                "title": "Test Title",
+                "body": "Test body",
+                "created_at": "2015-05-29T00:00:00Z",
+                "updated_at": "2015-05-29T00:00:00Z"
+            },
+            is_new_thread=False
+        )
         expected_response_data = {
             "author": self.user.username,
             "author_label": None,

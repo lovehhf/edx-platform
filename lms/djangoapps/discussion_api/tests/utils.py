@@ -18,12 +18,7 @@ def _get_thread_callback(thread_data):
         data along with the data from response_overrides and dummy values for any
         additional required fields.
         """
-        is_new_thread = thread_data.pop("new_thread")
         response_data = make_minimal_cs_thread(thread_data)
-        # pop resp_total as it is not part of response from CS on thread creation
-        # request
-        if is_new_thread:
-            response_data.pop("resp_total")
         for key, val_list in request.parsed_body.items():
             val = val_list[0]
             if key in ["anonymous", "anonymous_to_peers", "closed", "pinned"]:
@@ -92,7 +87,6 @@ class CommentsServiceMockMixin(object):
 
     def register_post_thread_response(self, thread_data):
         """Register a mock response for POST on the CS commentable endpoint"""
-        thread_data['new_thread'] = True
         httpretty.register_uri(
             httpretty.POST,
             re.compile(r"http://localhost:4567/api/v1/(\w+)/threads"),
@@ -104,7 +98,6 @@ class CommentsServiceMockMixin(object):
         Register a mock response for PUT on the CS endpoint for the given
         thread_id.
         """
-        thread_data['new_thread'] = False
         httpretty.register_uri(
             httpretty.PUT,
             "http://localhost:4567/api/v1/threads/{}".format(thread_data["id"]),
@@ -309,7 +302,7 @@ class CommentsServiceMockMixin(object):
         self.assert_query_params_equal(httpretty.last_request(), expected_params)
 
 
-def make_minimal_cs_thread(overrides=None):
+def make_minimal_cs_thread(overrides=None, is_new_thread=True):
     """
     Create a dictionary containing all needed thread fields as returned by the
     comments service with dummy data and optional overrides
@@ -336,10 +329,11 @@ def make_minimal_cs_thread(overrides=None):
         "comments_count": 0,
         "unread_comments_count": 0,
         "children": [],
-        "resp_total": 0,
         "read": False,
         "endorsed": False,
     }
+    if not is_new_thread:
+        ret["resp_total"] = 0
     ret.update(overrides or {})
     return ret
 

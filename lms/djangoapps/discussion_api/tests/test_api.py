@@ -1368,12 +1368,16 @@ class CreateThreadTest(
 
     @mock.patch("eventtracking.tracker.emit")
     def test_basic(self, mock_emit):
-        self.register_post_thread_response({
-            "id": "test_id",
-            "username": self.user.username,
-            "created_at": "2015-05-19T00:00:00Z",
-            "updated_at": "2015-05-19T00:00:00Z",
-        })
+        cs_thread = make_minimal_cs_thread(
+            {
+                "id": "test_id",
+                "username": self.user.username,
+                "created_at": "2015-05-19T00:00:00Z",
+                "updated_at": "2015-05-19T00:00:00Z",
+            },
+            is_new_thread=True
+        )
+        self.register_post_thread_response(cs_thread)
         with self.assert_signal_sent(api, 'thread_created', sender=None, user=self.user, exclude_args=('post',)):
             actual = create_thread(self.request, self.minimal_data)
         expected = {
@@ -1892,18 +1896,21 @@ class UpdateThreadTest(
         parameter and register mock responses for both GET and PUT on its
         endpoint.
         """
-        cs_data = make_minimal_cs_thread({
-            "id": "test_thread",
-            "course_id": unicode(self.course.id),
-            "commentable_id": "original_topic",
-            "username": self.user.username,
-            "user_id": str(self.user.id),
-            "created_at": "2015-05-29T00:00:00Z",
-            "updated_at": "2015-05-29T00:00:00Z",
-            "thread_type": "discussion",
-            "title": "Original Title",
-            "body": "Original body",
-        })
+        cs_data = make_minimal_cs_thread(
+            {
+                "id": "test_thread",
+                "course_id": unicode(self.course.id),
+                "commentable_id": "original_topic",
+                "username": self.user.username,
+                "user_id": str(self.user.id),
+                "created_at": "2015-05-29T00:00:00Z",
+                "updated_at": "2015-05-29T00:00:00Z",
+                "thread_type": "discussion",
+                "title": "Original Title",
+                "body": "Original body",
+            },
+            is_new_thread=False
+        )
         cs_data.update(overrides or {})
         self.register_get_thread_response(cs_data)
         self.register_put_thread_response(cs_data)

@@ -642,8 +642,7 @@ def update_thread(request, thread_id, update_data):
     """
     cc_thread, context = _get_thread_and_context(request, thread_id)
     _check_editable_fields(cc_thread, update_data, context)
-    serializer = ThreadSerializer(cc_thread, data=update_data, partial=True,
-                                  context=context)
+    serializer = ThreadSerializer(cc_thread, data=update_data, partial=True, context=context)
     actions_form = ThreadActionsForm(update_data)
     if not (serializer.is_valid() and actions_form.is_valid()):
         raise ValidationError(dict(serializer.errors.items() + actions_form.errors.items()))
