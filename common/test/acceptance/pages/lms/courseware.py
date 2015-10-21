@@ -124,8 +124,8 @@ class CoursewarePage(CoursePage):
         """
         self.q(css=".proctored_exam_status button.exam-button-turn-in-exam").first.click()
         self.wait_for_element_absence(".proctored_exam_status .exam-button-turn-in-exam", "End Exam Button gone")
-        self.wait_for_element_presence(".proctored_exam_status .exam-timer", "Timer bar")
-        self.q(css="button.submit-proctored-exam").first.click()
+        self.wait_for_element_presence("button[name='submit-proctored-exam']", "Submit Exam Button")
+        self.q(css="button[name='submit-proctored-exam']").first.click()
         self.wait_for_element_absence(".proctored_exam_status .exam-timer", "Timer bar")
 
     def start_proctored_exam(self):
