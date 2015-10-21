@@ -1874,8 +1874,8 @@ INSTALLED_APPS = (
 
     # OAuth2 Provider
     'provider',
-    'provider.oauth2',
-    'oauth2_provider',
+    # 'provider.oauth2',
+    # 'oauth2_provider',
 
     'third_party_auth',
 
@@ -1915,7 +1915,7 @@ INSTALLED_APPS = (
     'edxnotes',
 
     # Splash screen
-    'splash',
+    # 'splash',
 
     # Monitoring
     'datadog',
