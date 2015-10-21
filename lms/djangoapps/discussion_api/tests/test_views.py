@@ -681,6 +681,7 @@ class CommentViewSetListTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
             "voted": True,
             "vote_count": 4,
             "editable_fields": ["abuse_flagged", "voted"],
+            "children": [],
         }]
         self.register_get_thread_response({
             "id": self.thread_id,
@@ -704,7 +705,7 @@ class CommentViewSetListTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
         self.assert_query_params_equal(
             httpretty.httpretty.latest_requests[-2],
             {
-                "recursive": ["True"],
+                "recursive": ["False"],
                 "resp_skip": ["0"],
                 "resp_limit": ["10"],
                 "user_id": [str(self.user.id)],
@@ -738,7 +739,7 @@ class CommentViewSetListTest(DiscussionAPIViewTestMixin, ModuleStoreTestCase):
         self.assert_query_params_equal(
             httpretty.httpretty.latest_requests[-2],
             {
-                "recursive": ["True"],
+                "recursive": ["False"],
                 "resp_skip": ["68"],
                 "resp_limit": ["4"],
                 "user_id": [str(self.user.id)],
