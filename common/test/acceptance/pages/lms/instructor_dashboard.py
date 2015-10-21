@@ -776,7 +776,7 @@ class TimedExamPageAttemptsSection(PageObject):
 
     def is_browser_on_page(self):
         return self.q(css="div.wrap #ui-accordion-proctoring-accordion-header-1[aria-selected=true]").present and\
-               self.q(css="#search_attempt_id").present
+            self.q(css="#search_attempt_id").present
 
     @property
     def is_search_text_field_visible(self):
